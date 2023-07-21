@@ -1,14 +1,15 @@
-import { FC, PropsWithChildren } from "react";
-import css from "./Button.module.scss";
+import { FC, PropsWithChildren } from 'react';
+import css from './Button.module.scss';
 
 interface Props extends PropsWithChildren {
   onClick?: () => void;
-  bg?: "add" | 'del';
+  bg?: 'add' | 'del';
+  type?: 'button' | 'submit';
 }
 
-const Button: FC<Props> = ({ onClick, children }) => {
+const Button: FC<Props> = ({ onClick, children, type = 'button' }) => {
   return (
-    <button type="button" className={(css.button)} onClick={onClick}>
+    <button type={type} className={css.button} onClick={onClick}>
       {children}
     </button>
   );
