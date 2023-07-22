@@ -3,29 +3,52 @@ import Input from './stories/Input';
 import './App.css';
 import Button from './stories/Button';
 import { useQuery, useMutation } from '@apollo/client';
-import { GET_USERS_ALL } from './graphql/queries/user';
+import { GET_USERS_ALL } from './graphql/queries/usersAll';
 import { ADD_NEW_USER } from './graphql/mutations/user';
+// import { GET_USER_BY_ID } from './graphql/queries/userById';
+import { useForm, SubmitHandler, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 
 const App: FC = () => {
+  const [users, setUsers] = useState([]);
+
   const { data: dataQuery, loading } = useQuery(GET_USERS_ALL);
+  // const { data: byIdQuery, loading: byIdLoading } = useQuery(GET_USER_BY_ID);
   const [newUser, { data }] = useMutation(ADD_NEW_USER);
 
-  const [users, setUsers] = useState([]);
-  const [name, setName] = useState('');
-  const [age, setAge] = useState('');
+  const schema = yup.object({
+    name: yup.string().required(),
+    age: yup.string().required()
+  });
+  type FormData = yup.InferType<typeof schema>;
 
-  const addUser = async (e) => {
-    e.preventDefault();
+  const defaultValues: FormData = {
+    name: '',
+    age: ''
+  };
+
+  const { handleSubmit, control } = useForm<FormData>({
+    resolver: yupResolver(schema),
+    defaultValues
+  });
+
+  const onSubmit: SubmitHandler<FormData> = async ({ name, age }) => {
     try {
       await newUser({
         variables: {
-          contacts: { name, age }
+          userInfo: { name, age }
         }
       });
     } catch (err) {
       console.log(err);
+    } finally {
+      if (!loading) {
+        setUsers(dataQuery.users);
+      }
     }
   };
+  console.log(users);
 
   useEffect(() => {
     if (!loading) {
@@ -33,27 +56,25 @@ const App: FC = () => {
     }
   }, [dataQuery, loading]);
 
-  console.log(dataQuery, data);
-
   return (
     <>
-      <form onSubmit={(e) => addUser(e)}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <div className='formWrapper'>
-          <Input value={name} onChange={(e) => setName(e.target.value)} placeholder='Name' />
-          <Input value={age} onChange={(e) => setAge(e.target.value)} placeholder='Age' />
+          <Controller name='name' control={control} render={({ field }) => <Input placeholder='Name' {...field} />} />
+          <Controller name='age' control={control} render={({ field }) => <Input placeholder='Age' {...field} />} />
         </div>
         <div className='buttonWrapper'>
           <Button type='submit'>Add</Button>
-          <Button>Delete</Button>
           <Button>Find</Button>
         </div>
       </form>
       <div>
         {users.map((user) => (
-          <div key={user.id}>
+          <div style={{ display: 'flex', gap: '20px' }} key={user.id}>
             <div>{user.id}</div>
             <div>{user.name}</div>
             <div>{user.age}</div>
+            <Button>Delete</Button>
           </div>
         ))}
       </div>

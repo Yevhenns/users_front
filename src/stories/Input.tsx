@@ -4,7 +4,7 @@ import css from './Input.module.scss';
 interface Props {
   placeholder: string;
   value?: string;
-  onChange: (e) => void;
+  onChange?: (e) => void;
 }
 
 const Input: FC<Props> = ({ placeholder, value, onChange }) => {
