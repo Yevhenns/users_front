@@ -48,7 +48,6 @@ const App: FC = () => {
       }
     }
   };
-  console.log(users);
 
   useEffect(() => {
     if (!loading) {
