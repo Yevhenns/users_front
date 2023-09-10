@@ -9,6 +9,7 @@ import { ADD_NEW_USER } from './graphql/mutations/user';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import UsersList from './components/usersList/UsersList';
 
 const App: FC = () => {
   const [users, setUsers] = useState([]);
@@ -75,16 +76,7 @@ const App: FC = () => {
           <Button>Find</Button>
         </div>
       </form>
-      <div>
-        {users.map(user => (
-          <div style={{ display: 'flex', gap: '20px' }} key={user.id}>
-            <div>{user.id}</div>
-            <div>{user.name}</div>
-            <div>{user.age}</div>
-            <Button>Delete</Button>
-          </div>
-        ))}
-      </div>
+      <UsersList users={users} />
     </>
   );
 };
