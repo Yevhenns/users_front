@@ -19,26 +19,26 @@ const App: FC = () => {
 
   const schema = yup.object({
     name: yup.string().required(),
-    age: yup.string().required()
+    age: yup.string().required(),
   });
   type FormData = yup.InferType<typeof schema>;
 
   const defaultValues: FormData = {
     name: '',
-    age: ''
+    age: '',
   };
 
   const { handleSubmit, control } = useForm<FormData>({
     resolver: yupResolver(schema),
-    defaultValues
+    defaultValues,
   });
 
   const onSubmit: SubmitHandler<FormData> = async ({ name, age }) => {
     try {
       await newUser({
         variables: {
-          userInfo: { name, age }
-        }
+          userInfo: { name, age },
+        },
       });
     } catch (err) {
       console.log(err);
@@ -58,17 +58,25 @@ const App: FC = () => {
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className='formWrapper'>
-          <Controller name='name' control={control} render={({ field }) => <Input placeholder='Name' {...field} />} />
-          <Controller name='age' control={control} render={({ field }) => <Input placeholder='Age' {...field} />} />
+        <div className="formWrapper">
+          <Controller
+            name="name"
+            control={control}
+            render={({ field }) => <Input placeholder="Name" {...field} />}
+          />
+          <Controller
+            name="age"
+            control={control}
+            render={({ field }) => <Input placeholder="Age" {...field} />}
+          />
         </div>
-        <div className='buttonWrapper'>
-          <Button type='submit'>Add</Button>
+        <div className="buttonWrapper">
+          <Button type="submit">Add</Button>
           <Button>Find</Button>
         </div>
       </form>
       <div>
-        {users.map((user) => (
+        {users.map(user => (
           <div style={{ display: 'flex', gap: '20px' }} key={user.id}>
             <div>{user.id}</div>
             <div>{user.name}</div>
