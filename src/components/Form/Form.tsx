@@ -1,8 +1,11 @@
-import { FC, useState, useEffect } from 'react';
-import Button from '../../stories/Button';
+import { FC } from 'react';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+
+import Button from '../../stories/Button';
 import Input from '../../stories/Input';
+import css from './Form.module.scss';
 
 const Form: FC = () => {
   const schema = yup.object({
@@ -38,8 +41,8 @@ const Form: FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="formWrapper">
+    <form className={css.form} onSubmit={handleSubmit(onSubmit)}>
+      <div className={css.formWrapper}>
         <Controller
           name="name"
           control={control}
@@ -51,7 +54,7 @@ const Form: FC = () => {
           render={({ field }) => <Input placeholder="Age" {...field} />}
         />
       </div>
-      <div className="buttonWrapper">
+      <div className={css.buttonWrapper}>
         <Button type="submit">Add</Button>
         <Button>Find</Button>
       </div>

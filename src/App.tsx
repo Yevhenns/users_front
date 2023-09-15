@@ -10,6 +10,7 @@ import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import UsersList from './components/usersList/UsersList';
+import Form from './components/Form/Form';
 
 interface Users {
   users: { name: string; age: string }[];
@@ -64,6 +65,7 @@ const App: FC = () => {
 
   return (
     <>
+      <Form />
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="formWrapper">
           <Controller
