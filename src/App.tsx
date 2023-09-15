@@ -11,12 +11,18 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import UsersList from './components/usersList/UsersList';
 
-const App: FC = () => {
-  const [users, setUsers] = useState([]);
+interface Users {
+  users: { name: string; age: string }[];
+}
 
-  const { data: dataQuery, loading } = useQuery(GET_USERS_ALL);
+const App: FC = () => {
+  const [users, setUsers] = useState<Users>([]);
+
+  const { data: dataQuery, loading } = useQuery<Users>(GET_USERS_ALL);
   // const { data: byIdQuery, loading: byIdLoading } = useQuery(GET_USER_BY_ID);
-  const [newUser, { data }] = useMutation(ADD_NEW_USER);
+  const [newUser, { data }] = useMutation<{ name: string; age: string }>(
+    ADD_NEW_USER
+  );
 
   const schema = yup.object({
     name: yup.string().required(),
@@ -51,7 +57,7 @@ const App: FC = () => {
   };
 
   useEffect(() => {
-    if (!loading) {
+    if (!loading && dataQuery?.users !== undefined) {
       setUsers(dataQuery.users);
     }
   }, [dataQuery, loading]);

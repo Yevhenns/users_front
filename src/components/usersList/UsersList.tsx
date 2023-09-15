@@ -13,7 +13,7 @@ const UsersList: FC<Props> = ({ users }) => {
   return (
     <div>
       {users.map(user => (
-        <UsersListItem user={user} />
+        <UsersListItem user={user} key={user.id} />
       ))}
     </div>
   );
