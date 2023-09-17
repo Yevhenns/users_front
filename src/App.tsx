@@ -1,47 +1,34 @@
 import { FC, useState, useEffect } from 'react';
-import Input from './stories/Input';
-import './App.css';
-import Button from './stories/Button';
 import { useQuery, useMutation } from '@apollo/client';
+import './App.css';
 import { GET_USERS_ALL } from './graphql/queries/usersAll';
-import { ADD_NEW_USER } from './graphql/mutations/user';
 // import { GET_USER_BY_ID } from './graphql/queries/userById';
-import { useForm, SubmitHandler, Controller } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
+import { ADD_NEW_USER } from './graphql/mutations/user';
+
 import UsersList from './components/usersList/UsersList';
 import Form from './components/Form/Form';
 
+interface User {
+  id: number;
+  name: string;
+  age: string;
+}
+
 interface Users {
-  users: { name: string; age: string }[];
+  users: User[];
 }
 
 const App: FC = () => {
-  const [users, setUsers] = useState<Users>([]);
+  const [usersArr, setUsersArr] = useState([]);
 
-  const { data: dataQuery, loading } = useQuery<Users>(GET_USERS_ALL);
-  // const { data: byIdQuery, loading: byIdLoading } = useQuery(GET_USER_BY_ID);
-  const [newUser, { data }] = useMutation<{ name: string; age: string }>(
-    ADD_NEW_USER
-  );
+  const { data: dataAllUsers, loading } = useQuery<Users>(GET_USERS_ALL);
+  // const { data: dataById, loading: byIdLoading } =
+  //   useQuery<User>(GET_USER_BY_ID);
 
-  const schema = yup.object({
-    name: yup.string().required(),
-    age: yup.string().required(),
-  });
-  type FormData = yup.InferType<typeof schema>;
+  const [newUser, { data: dataNewUser, loading: newUserLoading }] =
+    useMutation<User>(ADD_NEW_USER);
 
-  const defaultValues: FormData = {
-    name: '',
-    age: '',
-  };
-
-  const { handleSubmit, control } = useForm<FormData>({
-    resolver: yupResolver(schema),
-    defaultValues,
-  });
-
-  const onSubmit: SubmitHandler<FormData> = async ({ name, age }) => {
+  const addNewUser = async (name: string, age: string) => {
     try {
       await newUser({
         variables: {
@@ -51,40 +38,23 @@ const App: FC = () => {
     } catch (err) {
       console.log(err);
     } finally {
-      if (!loading) {
-        setUsers(dataQuery.users);
+      if (!loading && dataAllUsers.users !== undefined) {
+        setUsersArr(dataAllUsers.users);
       }
     }
   };
 
   useEffect(() => {
-    if (!loading && dataQuery?.users !== undefined) {
-      setUsers(dataQuery.users);
+    if (!loading && dataAllUsers !== undefined) {
+      setUsersArr(dataAllUsers.users);
     }
-  }, [dataQuery, loading]);
+  }, [dataAllUsers, loading]);
 
+  console.log(usersArr, loading, dataAllUsers);
   return (
     <>
-      <Form />
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="formWrapper">
-          <Controller
-            name="name"
-            control={control}
-            render={({ field }) => <Input placeholder="Name" {...field} />}
-          />
-          <Controller
-            name="age"
-            control={control}
-            render={({ field }) => <Input placeholder="Age" {...field} />}
-          />
-        </div>
-        <div className="buttonWrapper">
-          <Button type="submit">Add</Button>
-          <Button>Find</Button>
-        </div>
-      </form>
-      <UsersList users={users} />
+      <Form addNewUser={addNewUser} />
+      <UsersList users={usersArr} />
     </>
   );
 };

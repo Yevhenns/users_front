@@ -7,7 +7,11 @@ import Button from '../../stories/Button';
 import Input from '../../stories/Input';
 import css from './Form.module.scss';
 
-const Form: FC = () => {
+interface Props {
+  addNewUser(name: string, age: string): void;
+}
+
+const Form: FC<Props> = ({ addNewUser }) => {
   const schema = yup.object({
     name: yup.string().required(),
     age: yup.string().required(),
@@ -24,20 +28,8 @@ const Form: FC = () => {
     defaultValues,
   });
 
-  const onSubmit: SubmitHandler<FormData> = async ({ name, age }) => {
-    try {
-      await newUser({
-        variables: {
-          userInfo: { name, age },
-        },
-      });
-    } catch (err) {
-      console.log(err);
-    } finally {
-      if (!loading) {
-        setUsers(dataQuery.users);
-      }
-    }
+  const onSubmit: SubmitHandler<FormData> = ({ name, age }) => {
+    addNewUser(name, age);
   };
 
   return (
