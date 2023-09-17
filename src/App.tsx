@@ -1,9 +1,11 @@
 import { FC, useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import './App.css';
+
 import { GET_USERS_ALL } from './graphql/queries/usersAll';
 // import { GET_USER_BY_ID } from './graphql/queries/userById';
 import { ADD_NEW_USER } from './graphql/mutations/user';
+// import { REMOVE_USER } from './graphql/mutations/removeUser';
 
 import UsersList from './components/usersList/UsersList';
 import Form from './components/Form/Form';
@@ -27,6 +29,8 @@ const App: FC = () => {
 
   const [newUser, { data: dataNewUser, loading: newUserLoading }] =
     useMutation<User>(ADD_NEW_USER);
+  // const { data: dataDeleteUser, loading: deleteUserLoading } =
+  //   useMutation(REMOVE_USER);
 
   const addNewUser = async (name: string, age: string) => {
     try {
@@ -50,7 +54,6 @@ const App: FC = () => {
     }
   }, [dataAllUsers, loading]);
 
-  console.log(usersArr, loading, dataAllUsers);
   return (
     <>
       <Form addNewUser={addNewUser} />
